@@ -1,5 +1,31 @@
-*.db
-outfile.*
-node_modules
-package-lock.json
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# TypeScript
+*.tsbuildinfo
+
+# IDE
+.idea/
+
+# npm
+pnpm-debug.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Sample outputs
+cache.json
+outfile.csv
+outfile.json

@@ -1,21 +1,32 @@
-A pure JavaScript library for accessing the Legiscan database of US state legislation. You will need an API key from https://legiscan.com/legiscan in order to use this client. Best-practice code examples from actual reporting at Chalkbeat are available in the `samples` folder.
+A modern TypeScript fork of [Civic News's JavaScript library](https://github.com/Chalkbeat/legiscan-client) for accessing the Legiscan database of US state legislation. You will need an API key from https://legiscan.com/legiscan in order to use this client.
 
-For Node or other server-based runtimes, you can install from NPM:
+# Changes from the original library
+
+This library is a complete rewrite of the original JavaScript client, with the following goals:
+* Use TypeScript for a better developer experience
+* Normalize API responses to be more consistent and easier to work with
+* Keep up to date with the LegiScan API
+* Replace deprecated dependencies
+* Add tests for the client
+
+# Installation
+
+For Node or other server-based runtimes, it is recommended to install with PNPM:
 
 ```sh
-npm install @civicnews/legiscan-client
+pnpm install @ryangarber/legiscan-ts
 ```
 
 Although it is primarily intended for use on the server, the client uses only standard runtime APIs like `fetch()`, and (as long as the API continues to use the correct CORS headers) can also run in the browser itself.
 
-When using Node, this package also installs a command-line client that can be run with the `legiscan-client` command, either for manual access or integration with other languages.
+When using Node, this package also installs a command-line client that can be run with the `legiscan-ts` command, either for manual access or integration with other languages.
 
-# Getting started
+# Usage
 
 To interact with the API, import and create an instance of the `LegiscanClient` class, which takes an API key as its argument. You can also set the `$LEGISCAN_API_KEY` environment variable, and then the client will pick that up instead.
 
 ```js
-import { LegiscanClient } from "@civicnews/legiscan-client";
+import { LegiscanClient } from "@ryangarber/legiscan-ts";
 // providing an API key directly:
 let legiscan = new LegiscanClient(API_KEY);
 // with the environment variable:
@@ -36,19 +47,19 @@ Generally, the objects returned by the client methods will match the schema desc
 
 # CLI
 
-When installed globally, or when executed from an `npm run` script, the `legiscan-client` command provides [ND-JSON](https://github.com/ndjson/ndjson-spec) output from API calls. Some of these calls return a lot of results, or need to be filtered, and that's easier to do with newline-delimited output in languages and tools that support streaming from invoked processes.
+When installed globally, or when executed from an `npm run` script, the `legiscan-ts` command provides [ND-JSON](https://github.com/ndjson/ndjson-spec) output from API calls. Some of these calls return a lot of results, or need to be filtered, and that's easier to do with newline-delimited output in languages and tools that support streaming from invoked processes.
 
 The command line takes a case-insensitive API method name as its first argument, followed by positional arguments for required input and flags for optional parameters matching the Legiscan documentation:
 
 ```sh
 # getBill always wants an ID
-legiscan-client getbill 174039
+legiscan-ts getbill 174039
 
 # you can also provide this with a flag
-legiscan-client getbill --id=174039
+legiscan-ts getbill --id=174039
 
 # getsearch example
-legiscan-client getsearch "education AND gender" --state=TN
+legiscan-ts getsearch "education AND gender" --state=TN
 ```
 
 # Best practices and usage notes
@@ -57,14 +68,13 @@ legiscan-client getsearch "education AND gender" --state=TN
 
 The Legiscan API limits users to 30,000 requests per month (resetting on the 1st). This may seem like a lot, unless you're a journalist who does a lot of scraping, or until you start pulling all legislation for an active session in, say, Michigan (about 3,000 bills as of April 2024). Since you cannot get many parts of the bill status without individual calls to the `getBill` method, your token usage can add up quickly.
 
-As a result, it is extremely important to add a caching layer whenever you use the API client for anything involving bill details. For example, in the `samples/michigan.js` file, you can see where we use a SQLite database as a key/value store:
+As a result, it is extremely important to add a caching layer whenever you use the API client for anything involving bill details. For example, in the `samples/michigan.js` file, you can see where we use `lowdb` as a key/value store:
 
 ```js
-import Database from "better-sqlite3";
-var cache = new Database("cache.db");
-cache.exec(`CREATE TABLE IF NOT EXISTS cache (key TEXT PRIMARY KEY, value TEXT);`);
-var getCached = cache.prepare(`SELECT value FROM cache WHERE key = ?;`).pluck();
-var setCached = cache.prepare(`INSERT INTO cache VALUES (?, ?);`);
+import { JSONFilePreset } from "lowdb/node";
+
+const defaultData = { cache: {} };
+const db = await JSONFilePreset("cache.json", defaultData);
 ```
 
 Each bill returned from a Legiscan API call includes a `change_hash` ID that is unique to that particular bill revision. Using that hash as a key, you can only make requests when the bill is updated, and otherwise pull from the database to save a request:
@@ -72,14 +82,15 @@ Each bill returned from a Legiscan API call includes a `change_hash` ID that is 
 ```js
 var hash = bill.change_hash;
 
-var details = getCached.get(hash);
+var details = db.data.cache[hash];
 if (details) {
   // use the cached info
   details = JSON.parse(details);
 } else {
   // get a fresh copy and cache it
   details = await client.getBill(bill.bill_id);
-  setCached.run(hash, JSON.stringify(details));
+  db.data.cache[hash] = JSON.stringify(details);
+  await db.write();
 }
 ```
 
@@ -108,7 +119,7 @@ However, if you're interacting with some API calls that expect to receive these 
 Each of these has a corresponding `*_VALUES` constant that goes the other way, where the lookup key is the string text, and the value is the API flag.
 
 ```js
-import { VOTE, VOTE_VALUES } from "@civicnews/legiscan-client";
+import { VOTE, VOTE_VALUES } from "@ryangarber/legiscan-ts";
 
 console.log(VOTE[1]); // "Yea"
 console.log(VOTE_VALUES["Nay"]); // 2
@@ -126,7 +137,7 @@ console.log(response.monitorlist);
 In some cases (including the above monitor list), the API will not return an array for a list of items, but instead will provide an object with numerical keys. In this case, you can use the provided `numericalToArray` function to convert this into an actual JavaScript array (note that this will throw away any non-numerical keys on the object during conversion):
 
 ```js
-import { numericalToArray } from "@civicnews/legiscan-client";
+import { numericalToArray } from "@ryangarber/legiscan-ts";
 var response = await client.request("getMonitorList", { record: "current" });
 // convert to a native array
 var list = numericalToArray(response.monitorlist);

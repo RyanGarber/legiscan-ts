@@ -1,33 +1,63 @@
 {
-  "name": "@civicnews/legiscan-client",
-  "version": "1.0.3",
-  "description": "A Node client for the Legiscan API",
-  "main": "index.js",
-  "type": "module",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "name": "@ryangarber/legiscan-ts",
+  "version": "2.0.0",
+  "description": "A TypeScript client for the Legiscan API.",
+  "author": "Civic News",
+  "contributors": [
+    "Ryan Garber <ryanmichaelgarber@gmail.com>"
+  ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Chalkbeat/legiscan-client.git"
+    "url": "git+https://github.com/RyanGarber/legiscan-ts.git"
   },
-  "keywords": [],
-  "author": "Civic News",
-  "license": "GPL-3.0",
+  "homepage": "https://github.com/RyanGarber/legiscan-ts#readme",
   "bugs": {
-    "url": "https://github.com/Chalkbeat/legiscan-client/issues"
+    "url": "https://github.com/RyanGarber/legiscan-ts/issues"
   },
-  "homepage": "https://github.com/Chalkbeat/legiscan-client#readme",
-  "dependencies": {
-    "comment-parser": "^1.4.1",
-    "minimist": "^1.2.8"
-  },
-  "devDependencies": {
-    "better-sqlite3": "^9.4.5",
-    "cli-progress": "^3.12.0",
-    "csv": "^6.3.8"
+  "license": "GPL-3.0",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./package.json": "./package.json"
   },
   "bin": {
-    "legiscan-client": "./cli.js"
+    "legiscan-ts": "dist/cli.js"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "build:clean": "rm -rf dist/",
+    "prebuild": "pnpm run build:clean",
+    "prepublishOnly": "pnpm run lint && pnpm run typecheck && pnpm run build"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "commander": "^14.0.3",
+    "comment-parser": "^1.4.6",
+    "lowdb": "^7.0.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/minimist": "^1.2.5",
+    "@types/node": "^25.6.0",
+    "cli-progress": "^3.12.0",
+    "csv": "^6.5.1",
+    "eslint": "^10.2.1",
+    "globals": "^17.5.0",
+    "prettier": "^3.8.3",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.58.2"
   }
 }
