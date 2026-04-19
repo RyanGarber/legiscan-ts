@@ -19,7 +19,7 @@ pnpm install @ryangarber/legiscan-ts
 
 Although it is primarily intended for use on the server, the client uses only standard runtime APIs like `fetch()`, and (as long as the API continues to use the correct CORS headers) can also run in the browser itself.
 
-When using Node, this package also installs a command-line client that can be run with the `legiscan-ts` command, either for manual access or integration with other languages.
+When using Node, this package also installs a command-line client that can be run with the `legiscan` command, either for manual access or integration with other languages.
 
 # Usage
 
@@ -47,19 +47,16 @@ Generally, the objects returned by the client methods will match the schema desc
 
 # CLI
 
-When installed globally, or when executed from an `npm run` script, the `legiscan-ts` command provides [ND-JSON](https://github.com/ndjson/ndjson-spec) output from API calls. Some of these calls return a lot of results, or need to be filtered, and that's easier to do with newline-delimited output in languages and tools that support streaming from invoked processes.
+When installed globally, or when executed from an `npm run` script, the `legiscan` command provides [ND-JSON](https://github.com/ndjson/ndjson-spec) output from API calls. Some of these calls return a lot of results, or need to be filtered, and that's easier to do with newline-delimited output in languages and tools that support streaming from invoked processes.
 
 The command line takes a case-insensitive API method name as its first argument, followed by positional arguments for required input and flags for optional parameters matching the Legiscan documentation:
 
 ```sh
-# getBill always wants an ID
-legiscan-ts getbill 174039
+# get a bill by its id
+legiscan bill --id 174039
 
-# you can also provide this with a flag
-legiscan-ts getbill --id=174039
-
-# getsearch example
-legiscan-ts getsearch "education AND gender" --state=TN
+# search for bills in a state
+legiscan search "education AND gender" --state TN
 ```
 
 # Best practices and usage notes
@@ -102,27 +99,28 @@ The Legiscan API uses a lot of flags and/or sentinel values for things like legi
 
 However, if you're interacting with some API calls that expect to receive these flags, this library also exports a set of constants that can be used to convert between them. The following constants are objects mapping the numeral code to their text value:
 
-* `BILL_TYPE` - Legislation categories, such as "Bill," Resolution," or "Executive Order"
-* `EVENT_TYPE` - Distinguishes between hearings, executive sessions, and markup
-* `PARTY` - Political party associated with sponsors, legislation, and so on
-* `PROGRESS` - Legislation progress from "Prefiled" forward. Note that these IDs are not in chronological order.
-* `REASON` - Not used in the REST API
-* `ROLE` - The type of person or persons sponsoring a bill
-* `SAST_TYPE` - Same As/Similar To metadata
-* `SPONSOR_TYPE` - The sponsor relationship to a bill ("Sponsor", "Co-Sponsor", etc)
-* `STANCE` - A position that can be provided when setting an automated monitor list
-* `STATE` - US State by Postal Code
-* `SUPPLEMENT_TYPE` - Types of supplemental documents for a bill, such as fiscal notes or analysis
-* `TEXT_TYPE` - Types of primary documents for a bill revision
-* `VOTE` - "Yea," "Nay," "Not voting," or "Absent"
+* `BillType` - Legislation categories, such as "Bill," Resolution," or "ExecutiveOrder"
+* `EventType` - Distinguishes between hearings, executive sessions, and markup
+* `Party` - Political party associated with sponsors, legislation, and so on
+* `Progress` - Legislation progress from "Prefiled" forward. Note that these IDs are not in chronological order.
+* `Reason` - Not used in the REST API
+* `Role` - The type of person or persons sponsoring a bill
+* `SastType` - Same As/Similar To metadata
+* `SponsorType` - The sponsor relationship to a bill ("Sponsor", "CoSponsor", etc)
+* `Stance` - A position that can be provided when setting an automated monitor list
+* `State` - US State by Postal Code
+* `SupplementType` - Types of supplemental documents for a bill, such as fiscal notes or analysis
+* `TextType` - Types of primary documents for a bill revision
+* `Vote` - "Yea," "Nay," "Not voting," or "Absent"
 
-Each of these has a corresponding `*_VALUES` constant that goes the other way, where the lookup key is the string text, and the value is the API flag.
+These map to the numerical code returned by the API. You can use `asName` and `asNumber` to convert between the two. For example, to get the text value of a vote code, or to get the code for a "Nay" vote, you could write:
 
-```js
-import { VOTE, VOTE_VALUES } from "@ryangarber/legiscan-ts";
-
-console.log(VOTE[1]); // "Yea"
-console.log(VOTE_VALUES["Nay"]); // 2
+```ts
+import { asName, Vote } from "@ryangarber/legiscan-ts";
+let voteName = asName(Vote, 1); // "Yea"
+let voteNumber = asNumber(Vote, "Nay"); // 2
+// values of the correct type will be returned as-is:
+console.log(asName(Vote, "Yea")); // "Yea"
 ```
 
 ## Internal methods

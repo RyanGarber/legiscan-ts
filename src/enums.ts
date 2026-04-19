@@ -48,7 +48,7 @@ export const Reason = {
   HistoryMinor: 16,
   SubjectAdd: 17,
   SubjectRemove: 18,
-  SAST: 19,
+  Sast: 19,
   Text: 20,
   Amendment: 21,
   Supplement: 22,
@@ -57,7 +57,7 @@ export const Reason = {
   Progress: 25,
   VoteUpdate: 26,
   TextUpdate: 27,
-  ICBM: 99,
+  Icbm: 99,
 } as const;
 
 export const Role = {

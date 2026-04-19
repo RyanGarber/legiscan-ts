@@ -17,7 +17,16 @@ if (!key) {
 const client = new LegiscanClient();
 const program = new Command();
 
-program.name("legiscan").description("CLI for Legiscan API").version("1.0.0");
+const packageJson = JSON.parse(
+  fs.readFileSync(
+    path.resolve(import.meta.dirname, "../package.json"),
+    "utf-8",
+  ),
+);
+program
+  .name("legiscan")
+  .description("CLI for Legiscan API")
+  .version(packageJson.version);
 
 const clientSource = fs.readFileSync(
   path.resolve(

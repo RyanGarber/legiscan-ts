@@ -1,6 +1,6 @@
 {
   "name": "@ryangarber/legiscan-ts",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A TypeScript client for the Legiscan API.",
   "author": "Civic News",
   "contributors": [
@@ -30,7 +30,7 @@
     "./package.json": "./package.json"
   },
   "bin": {
-    "legiscan-ts": "dist/cli.js"
+    "legiscan": "dist/cli.js"
   },
   "scripts": {
     "lint": "eslint .",

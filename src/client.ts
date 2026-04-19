@@ -70,7 +70,7 @@ export class LegiscanClient {
 
   /**
    * Get a list of sessions for a state
-   * @cli getSessionList
+   * @cli sessionlist
    * @param [state] The US state, or all states if omitted
    */
   async getSessionList({ state }: { state?: Needle }) {
@@ -85,7 +85,7 @@ export class LegiscanClient {
 
   /**
    * Get a list of all bills for a given session or state
-   * @cli getMasterList
+   * @cli masterlist
    * @param [state] US State, will return the current session
    * @param [session] the ID retrieved from getSessionList()
    */
@@ -107,7 +107,7 @@ export class LegiscanClient {
 
   /**
    * Get the full text of a bill
-   * @cli getBillText
+   * @cli billtext
    * @param id bill ID to request
    */
   async getBillText({ id }: { id: number }) {
@@ -117,7 +117,7 @@ export class LegiscanClient {
 
   /**
    * Get the details for a bill (such as status or history)
-   * @cli getBill
+   * @cli bill
    * @param id bill ID to request
    */
   async getBill({ id }: { id: number }) {
@@ -141,7 +141,7 @@ export class LegiscanClient {
 
   /**
    * Get the text of an amendment
-   * @cli getAmendment
+   * @cli amendment
    * @param id amendment ID number (probably from getBill)
    */
   async getAmendment({ id }: { id: number }) {
@@ -151,7 +151,7 @@ export class LegiscanClient {
 
   /**
    * Get the text of a supplement (such as a fiscal note or analysis)
-   * @cli getSupplement
+   * @cli supplement
    * @param id supplement ID number (probably from getBill)
    */
   async getSupplement({ id }: { id: number }) {
@@ -161,7 +161,7 @@ export class LegiscanClient {
 
   /**
    * Get the details of a roll call vote
-   * @cli getRollCall
+   * @cli rollcall
    * @param id vote ID number
    */
   async getRollCall({ id }: { id: number }) {
@@ -171,7 +171,7 @@ export class LegiscanClient {
 
   /**
    * Get details on a person by ID
-   * @cli getPerson
+   * @cli person
    * @param id The Legiscan person ID
    */
   async getPerson({ id }: { id: number }) {
@@ -182,7 +182,7 @@ export class LegiscanClient {
 
   /**
    * Get all active people in a given legislative session
-   * @cli getSessionPeople
+   * @cli sessionpeople
    * @param id The Legiscan session ID
    */
   async getSessionPeople({ id }: { id: number }) {
@@ -196,7 +196,7 @@ export class LegiscanClient {
 
   /**
    * Get a list of bills sponsored by a specific person
-   * @cli getSponsoredList
+   * @cli sponsoredlist
    * @param id Legiscan person ID for the sponsor
    */
   async getSponsoredList({ id }: { id: number }) {
@@ -216,7 +216,7 @@ export class LegiscanClient {
 
   /**
    * Get the results of a search as a complete array containing all response pages
-   * @cli getSearch
+   * @cli search
    * @param query Full text query
    * @param [state] US state for this search
    * @param [year] Year where 1=all, 2=current, 3=recent, 4=prior, >1900=exact
