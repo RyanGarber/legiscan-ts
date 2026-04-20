@@ -96,7 +96,10 @@ export class LegiscanClient {
     state?: Needle;
     session?: number;
   }) {
-    const result = await this.request("getMasterList", { state, id: session });
+    const result = await this.request("getMasterList", {
+      ...(state ? { state: asName(State, state) } : {}),
+      ...(session ? { id: session.toString() } : {}),
+    });
     const list = numericalToArray(result.masterlist);
     for (const item of list) {
       item.status_id = item.status;
