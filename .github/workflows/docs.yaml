@@ -38,6 +38,7 @@ jobs:
         run: |
           pnpm run build
           pnpm exec typedoc
+          touch docs/.nojekyll
 
       - name: Configure Pages
         uses: actions/configure-pages@v6
@@ -46,6 +47,7 @@ jobs:
         uses: actions/upload-pages-artifact@v5
         with:
           path: './docs'
+          include-hidden-files: 'true'
 
       - name: Deploy
         id: deployment
