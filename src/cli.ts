@@ -5,6 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { parse } from "comment-parser";
 import { Command } from "commander";
+import packageJson from "../package.json" with { type: "json" };
 
 // Ensure the API key is set
 const key = process.env.LEGISCAN_API_KEY;
@@ -17,12 +18,6 @@ if (!key) {
 const client = new LegiscanClient();
 const program = new Command();
 
-const packageJson = JSON.parse(
-  fs.readFileSync(
-    path.resolve(import.meta.dirname, "../package.json"),
-    "utf-8",
-  ),
-);
 program
   .name("legiscan")
   .description("CLI for Legiscan API")
@@ -42,13 +37,14 @@ for (const comment of parsed) {
   const cli = comment.tags.find((t) => t.tag == "cli");
   if (!cli) continue;
 
-  const method = cli.name;
+  const name = cli.name;
+  const method = cli.type;
   const description = comment.description;
   const params = comment.tags.filter(
     (t) => t.tag == "param" && t.name != "params",
   );
 
-  const command = program.command(method).description(description);
+  const command = program.command(name).description(description);
 
   for (const param of params) {
     if (param.optional) {
@@ -63,7 +59,6 @@ for (const comment of parsed) {
 
   command.action(async (options) => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result = await (client as any)[method](options);
       if (result instanceof Array) {
         for (const item of result) {

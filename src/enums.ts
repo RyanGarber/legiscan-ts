@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export const EventType = {
   Hearing: 1,
   ExecutiveSession: 2,
@@ -148,7 +150,7 @@ export const BillType = {
 export const Vote = {
   Yea: 1,
   Nay: 2,
-  NotVoting: 3,
+  Abstain: 3,
   Absent: 4,
 } as const;
 
@@ -207,26 +209,39 @@ export const State = {
   US: 52,
 } as const;
 
+export const Mime = {
+  HTML: 1,
+  PDF: 2,
+  WPD: 3,
+  DOC: 4,
+  RTF: 5,
+  DOCX: 6,
+};
+
 export type Needle = number | string;
 
 export function asName<T extends Record<string, number>>(
   haystack: T,
   needle: Needle,
 ): keyof T | undefined {
-  if (typeof needle === "string" && needle in haystack) {
-    return needle as keyof T;
-  }
-  return Object.entries(haystack).find(([, v]) => v === needle)?.[0] as
-    | keyof T
-    | undefined;
+  return Object.entries(haystack).find(
+    ([k, v]) => k === String(needle) || v === Number(needle),
+  )?.[0] as keyof T | undefined;
 }
 
 export function asNumber<T extends Record<string, number>>(
   haystack: T,
   needle: Needle,
 ): number | undefined {
-  if (typeof needle === "number" && Object.values(haystack).includes(needle)) {
-    return needle;
-  }
-  return haystack[needle as keyof T];
+  return Object.entries(haystack).find(
+    ([k, v]) => k === String(needle) || v === Number(needle),
+  )?.[1] as T[keyof T] | undefined;
+}
+
+export function zNames<T extends Record<string, number>>(haystack: T) {
+  return z.union(Object.keys(haystack).map((k) => z.literal(k)));
+}
+
+export function zNumbers<T extends Record<string, number>>(haystack: T) {
+  return z.union(Object.values(haystack).map((n) => z.literal(n)));
 }

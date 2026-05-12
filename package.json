@@ -1,6 +1,6 @@
 {
   "name": "@ryangarber/legiscan-ts",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "A TypeScript client for the Legiscan API.",
   "author": "Civic News",
   "contributors": [
@@ -34,8 +34,10 @@
   },
   "scripts": {
     "lint": "eslint .",
+    "test": "vitest",
     "typecheck": "tsc --noEmit",
-    "build": "tsc",
+    "typegen": "tsx scripts/typegen.ts",
+    "build": "pnpm run typegen && tsc",
     "build:clean": "rm -rf dist/",
     "prebuild": "pnpm run build:clean",
     "prepublishOnly": "pnpm run lint && pnpm run typecheck && pnpm run build"
@@ -46,7 +48,8 @@
   "dependencies": {
     "commander": "^14.0.3",
     "comment-parser": "^1.4.6",
-    "lowdb": "^7.0.1"
+    "lowdb": "^7.0.1",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -54,10 +57,15 @@
     "@types/node": "^25.6.0",
     "cli-progress": "^3.12.0",
     "csv": "^6.5.1",
+    "dotenv": "^17.4.2",
     "eslint": "^10.2.1",
     "globals": "^17.5.0",
+    "json-schema-to-typescript": "^15.0.4",
     "prettier": "^3.8.3",
+    "tsx": "^4.21.0",
+    "typedoc": "^0.28.19",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.58.2"
+    "typescript-eslint": "^8.58.2",
+    "vitest": "^4.1.5"
   }
 }
