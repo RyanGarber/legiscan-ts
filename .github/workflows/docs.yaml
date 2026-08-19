@@ -15,6 +15,11 @@ concurrency:
 
 jobs:
   docs:
+    # typedoc doesn't support typescript 7 yet. the api is not likely to change
+    # in the near future, so the docs will remain accurate and we can just wait
+    # for a proper typedoc update
+    if: false
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -22,17 +27,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: pnpm/action-setup@v6
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: lts/*
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm ci
 
       - name: Build docs
         run: |

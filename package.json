@@ -33,40 +33,40 @@
     "legiscan": "dist/cli.js"
   },
   "scripts": {
-    "lint": "eslint .",
+    "build": "tsdown",
+    "check": "biome check . && tsc --noEmit",
+    "check:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "lint": "biome lint .",
+    "prepublishOnly": "npm run check && npm test -- --run && npm run build",
+    "release": "bumpp --commit --push --tag && pnpm publish",
     "test": "vitest",
-    "typecheck": "tsc --noEmit",
-    "typegen": "tsx scripts/typegen.ts",
-    "build": "pnpm run typegen && tsc",
-    "build:clean": "rm -rf dist/",
-    "prebuild": "pnpm run build:clean",
-    "prepublishOnly": "pnpm run lint && pnpm run typecheck && pnpm run build"
+    "typecheck": "tsc --noEmit"
   },
   "engines": {
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "commander": "^14.0.3",
-    "comment-parser": "^1.4.6",
+    "commander": "^15.0.0",
+    "comment-parser": "^1.4.8",
     "lowdb": "^7.0.1",
-    "zod": "^4.3.6"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.5.9",
     "@eslint/js": "^10.0.1",
     "@types/minimist": "^1.2.5",
-    "@types/node": "^25.6.0",
+    "@types/node": "^26.2.0",
+    "bumpp": "^12.2.1",
     "cli-progress": "^3.12.0",
-    "csv": "^6.5.1",
+    "csv": "^6.6.3",
     "dotenv": "^17.4.2",
-    "eslint": "^10.2.1",
-    "globals": "^17.5.0",
+    "globals": "^17.11.0",
     "json-schema-to-typescript": "^15.0.4",
-    "prettier": "^3.8.3",
-    "tsx": "^4.21.0",
-    "typedoc": "^0.28.19",
-    "typescript": "^6.0.3",
-    "typescript-eslint": "^8.58.2",
-    "vitest": "^4.1.5"
+    "tsdown": "^0.22.14",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
   },
   "packageManager": "pnpm@11.1.0+sha512.0c44e842e5686b2c061a81adda8b2258bd8818e9704b2cf2c63d56b931a7b2e910092e085027003b96ca3911ab56a07f6df5abaed2be9925034cdd686a535b14"
 }

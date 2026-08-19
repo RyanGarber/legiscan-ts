@@ -1,6 +1,6 @@
+import dotenv from "dotenv";
 import { assert, test } from "vitest";
 import { LegiscanClient } from "./client.js";
-import dotenv from "dotenv";
 
 dotenv.config({ quiet: true });
 
@@ -39,10 +39,7 @@ test("test amendment", async () => {
 test("test supplement", async () => {
   const id = 386;
   const supplement = await client.getSupplement({ id });
-  assert(
-    supplement.supplement_id === id,
-    "Supplement should have the correct ID",
-  );
+  assert(supplement.supplement_id === id, "Supplement should have the correct ID");
 });
 
 test("test roll call", async () => {

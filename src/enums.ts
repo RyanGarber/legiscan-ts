@@ -3,7 +3,7 @@ import { z } from "zod";
 export const EventType = {
   Hearing: 1,
   ExecutiveSession: 2,
-  MarkupSession: 3,
+  MarkupSession: 3
 } as const;
 
 export const Party = {
@@ -12,7 +12,7 @@ export const Party = {
   Independent: 3,
   GreenParty: 4,
   Libertarian: 5,
-  Nonpartisan: 6,
+  Nonpartisan: 6
 } as const;
 
 export const Progress = {
@@ -28,7 +28,7 @@ export const Progress = {
   Refer: 9,
   ReportPass: 10,
   ReportDnp: 11,
-  Draft: 12,
+  Draft: 12
 } as const;
 
 export const Reason = {
@@ -59,13 +59,13 @@ export const Reason = {
   Progress: 25,
   VoteUpdate: 26,
   TextUpdate: 27,
-  Icbm: 99,
+  Icbm: 99
 } as const;
 
 export const Role = {
   Representative: 1,
   Senator: 2,
-  JointConference: 3,
+  JointConference: 3
 } as const;
 
 export const SastType = {
@@ -77,20 +77,20 @@ export const SastType = {
   EnablingFor: 6,
   EnabledBy: 7,
   Related: 8,
-  CarryOver: 9,
+  CarryOver: 9
 } as const;
 
 export const SponsorType = {
   Sponsor: 0,
   PrimarySponsor: 1,
   CoSponsor: 2,
-  JointSponsor: 3,
+  JointSponsor: 3
 } as const;
 
 export const Stance = {
   Watch: 0,
   Support: 1,
-  Oppose: 2,
+  Oppose: 2
 } as const;
 
 export const SupplementType = {
@@ -101,7 +101,7 @@ export const SupplementType = {
   LocalMandate: 5,
   CorrectionsImpact: 6,
   Misc: 7,
-  VetoLetter: 8,
+  VetoLetter: 8
 } as const;
 
 export const TextType = {
@@ -118,7 +118,7 @@ export const TextType = {
   Prefiled: 11,
   VetoMessage: 12,
   VetoResponse: 13,
-  Substitute: 14,
+  Substitute: 14
 } as const;
 
 export const BillType = {
@@ -144,14 +144,14 @@ export const BillType = {
   InitiativePetition: 20,
   RepealBill: 21,
   Remonstration: 22,
-  CommitteeBill: 23,
+  CommitteeBill: 23
 } as const;
 
 export const Vote = {
   Yea: 1,
   Nay: 2,
   Abstain: 3,
-  Absent: 4,
+  Absent: 4
 } as const;
 
 export const State = {
@@ -206,7 +206,7 @@ export const State = {
   WI: 49,
   WY: 50,
   DC: 51,
-  US: 52,
+  US: 52
 } as const;
 
 export const Mime = {
@@ -215,26 +215,26 @@ export const Mime = {
   WPD: 3,
   DOC: 4,
   RTF: 5,
-  DOCX: 6,
+  DOCX: 6
 };
 
 export type Needle = number | string;
 
 export function asName<T extends Record<string, number>>(
   haystack: T,
-  needle: Needle,
+  needle: Needle
 ): keyof T | undefined {
   return Object.entries(haystack).find(
-    ([k, v]) => k === String(needle) || v === Number(needle),
+    ([k, v]) => k === String(needle) || v === Number(needle)
   )?.[0] as keyof T | undefined;
 }
 
 export function asNumber<T extends Record<string, number>>(
   haystack: T,
-  needle: Needle,
+  needle: Needle
 ): number | undefined {
   return Object.entries(haystack).find(
-    ([k, v]) => k === String(needle) || v === Number(needle),
+    ([k, v]) => k === String(needle) || v === Number(needle)
   )?.[1] as T[keyof T] | undefined;
 }
 

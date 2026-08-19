@@ -15,22 +15,8 @@ import {
   State,
   SupplementType,
   TextType,
-  Vote,
+  Vote
 } from "./enums.js";
-import {
-  _zSession,
-  zGetAmendment,
-  zGetBill,
-  zGetBillText,
-  zGetMasterList,
-  zGetPerson,
-  zGetRollCall,
-  type zGetSearch,
-  zGetSessionList,
-  zGetSessionPeople,
-  zGetSponsoredList,
-  zGetSupplement,
-} from "./schemas/types.js";
 import type {
   Amendment,
   Bill,
@@ -42,8 +28,22 @@ import type {
   SessionList,
   SessionPeople,
   SponsoredList,
-  Supplement,
+  Supplement
 } from "./generated/types.js";
+import {
+  type _zSession,
+  zGetAmendment,
+  zGetBill,
+  zGetBillText,
+  zGetMasterList,
+  zGetPerson,
+  zGetRollCall,
+  type zGetSearch,
+  zGetSessionList,
+  zGetSessionPeople,
+  zGetSponsoredList,
+  zGetSupplement
+} from "./schemas/types.js";
 
 /**
  * Converts a PHP object with numerical keys into entries for consumption by other JS methods
@@ -75,9 +75,7 @@ export class LegiscanClient {
   /**
    * @param key the key for the API, defaults to your $LEGISCAN_API_KEY env variable
    */
-  constructor(
-    public key: string | undefined = process?.env?.LEGISCAN_API_KEY,
-  ) {}
+  constructor(public key: string | undefined = process?.env?.LEGISCAN_API_KEY) {}
 
   /**
    * Make an API request, adding the key automatically
@@ -89,13 +87,13 @@ export class LegiscanClient {
     url.search = new URLSearchParams({
       op: op,
       key: this.key!,
-      ...params,
+      ...params
     }).toString();
 
     const response = await (await fetch(url.toString())).json();
-    if (response.status == "ERROR") {
+    if (response.status === "ERROR") {
       throw new Error(
-        `Legiscan API rejected request: ${response.alert?.message ?? "no reason given"}`,
+        `Legiscan API rejected request: ${response.alert?.message ?? "no reason given"}`
       );
     }
     return response;
@@ -118,7 +116,7 @@ export class LegiscanClient {
    */
   async getSessionList({ state }: { state?: Needle }): Promise<SessionList> {
     const { sessions } = await this.request("getSessionList", {
-      ...(state ? { state: asName(State, state) } : {}),
+      ...(state ? { state: asName(State, state) } : {})
     });
     return zGetSessionList.parse(
       sessions.map(
@@ -138,9 +136,9 @@ export class LegiscanClient {
             session_tag: s.session_tag,
 
             dataset_hash: s.dataset_hash,
-            session_hash: s.session_hash,
-          }) satisfies zGetSessionList[number],
-      ),
+            session_hash: s.session_hash
+          }) satisfies zGetSessionList[number]
+      )
     ) as SessionList;
   }
 
@@ -152,14 +150,14 @@ export class LegiscanClient {
    */
   async getMasterList({
     state,
-    session,
+    session
   }: {
     state?: Needle;
     session?: number;
   }): Promise<MasterList> {
     const { masterlist } = await this.request("getMasterList", {
       ...(state ? { state: asName(State, state) } : {}),
-      ...(session ? { id: session.toString() } : {}),
+      ...(session ? { id: session.toString() } : {})
     });
     return zGetMasterList.parse(
       numericalToArray(masterlist).map(
@@ -174,11 +172,10 @@ export class LegiscanClient {
             status_id: b.status,
             status_date: b.status_date,
             last_action: b.last_action,
-            last_action_date:
-              b.last_action_date !== "0000-00-00" ? b.last_action_date : null,
-            change_hash: b.change_hash,
-          }) satisfies zGetMasterList[number],
-      ),
+            last_action_date: b.last_action_date !== "0000-00-00" ? b.last_action_date : null,
+            change_hash: b.change_hash
+          }) satisfies zGetMasterList[number]
+      )
     ) as MasterList;
   }
 
@@ -213,7 +210,7 @@ export class LegiscanClient {
       alt_text_size: text.alt_text_size || null,
       alt_text_hash: text.alt_text_hash || null,
       alt_state_link: text.alt_state_link || null,
-      alt_doc: text.alt_doc || null,
+      alt_doc: text.alt_doc || null
     } satisfies zGetBillText) as BillText;
   }
 
@@ -241,7 +238,7 @@ export class LegiscanClient {
         special: Boolean(bill.session.special),
         session_tag: bill.session.session_tag,
         session_title: bill.session.session_title,
-        session_name: bill.session.session_name,
+        session_name: bill.session.session_name
       },
       url: bill.url,
       state_link: bill.state_link,
@@ -252,14 +249,14 @@ export class LegiscanClient {
       progress: bill.progress.map((p: any): zGetBill["progress"][number] => ({
         date: p.date,
         event: asName(Progress, p.event)!,
-        event_id: p.event,
+        event_id: p.event
       })),
       state: asName(State, bill.state_id)!,
       state_id: bill.state_id,
       state_raw: bill.state,
       bill_number: bill.bill_number,
-      bill_type: asName(BillType, parseInt(bill.bill_type_id))!,
-      bill_type_id: parseInt(bill.bill_type_id),
+      bill_type: asName(BillType, parseInt(bill.bill_type_id, 10))!,
+      bill_type_id: parseInt(bill.bill_type_id, 10),
       bill_type_raw: bill.bill_type,
       body_id: bill.body_id,
       body_raw: bill.body,
@@ -268,35 +265,31 @@ export class LegiscanClient {
       title: bill.title,
       description: bill.description,
       pending_committee_id: bill.pending_committee_id,
-      committee: bill.committee.map(
-        (c: any): zGetBill["committee"][number] => ({
-          committee_id: c.committee_id,
-          chamber_id: c.chamber_id,
-          chamber_raw: c.chamber,
-          name: c.name,
-        }),
-      ),
-      referrals: bill.referrals.map(
-        (r: any): zGetBill["referrals"][number] => ({
-          date: r.date,
-          committee_id: r.committee_id,
-          chamber_id: r.chamber_id,
-          chamber_raw: r.chamber,
-          name: r.name,
-        }),
-      ),
+      committee: bill.committee.map((c: any): zGetBill["committee"][number] => ({
+        committee_id: c.committee_id,
+        chamber_id: c.chamber_id,
+        chamber_raw: c.chamber,
+        name: c.name
+      })),
+      referrals: bill.referrals.map((r: any): zGetBill["referrals"][number] => ({
+        date: r.date,
+        committee_id: r.committee_id,
+        chamber_id: r.chamber_id,
+        chamber_raw: r.chamber,
+        name: r.name
+      })),
       history: bill.history.map((h: any): zGetBill["history"][number] => ({
         date: h.date,
         action: h.action,
         chamber_id: h.chamber_id || null,
         chamber_raw: h.chamber || null,
-        importance: Boolean(h.importance),
+        importance: Boolean(h.importance)
       })),
       sponsors: bill.sponsors.map((s: any): zGetBill["sponsors"][number] => ({
         people_id: s.people_id,
         person_hash: s.person_hash,
-        party: asName(Party, parseInt(s.party_id))!,
-        party_id: parseInt(s.party_id),
+        party: asName(Party, parseInt(s.party_id, 10))!,
+        party_id: parseInt(s.party_id, 10),
         party_raw: s.party,
         state: asName(State, s.state_id)!,
         state_id: s.state_id,
@@ -322,18 +315,18 @@ export class LegiscanClient {
         committee_sponsor: Boolean(s.committee_sponsor),
         committee_id: s.committee_id || null,
         state_federal: Boolean(s.state_federal),
-        bio: s.bio,
+        bio: s.bio
       })),
       sasts: bill.sasts.map((s: any): zGetBill["sasts"][number] => ({
         sast_bill_id: s.sast_bill_id,
         sast_bill_number: s.sast_bill_number,
         type: asName(SastType, s.type_id)!,
         type_id: s.type_id,
-        type_raw: s.type,
+        type_raw: s.type
       })),
       subjects: bill.subjects.map((s: any): zGetBill["subjects"][number] => ({
         subject_id: s.subject_id,
-        subject_name: s.subject_name,
+        subject_name: s.subject_name
       })),
       texts: bill.texts.map((t: any): zGetBill["texts"][number] => ({
         doc_id: t.doc_id,
@@ -355,7 +348,7 @@ export class LegiscanClient {
         alt_mime_raw: t.alt_mime || null,
         alt_state_link: t.alt_state_link || null,
         alt_text_size: t.alt_text_size || null,
-        alt_text_hash: t.alt_text_hash || null,
+        alt_text_hash: t.alt_text_hash || null
       })),
       votes: bill.votes.map((v: any): zGetBill["votes"][number] => ({
         roll_call_id: v.roll_call_id,
@@ -370,56 +363,52 @@ export class LegiscanClient {
         chamber_id: v.chamber_id,
         chamber_raw: v.chamber,
         url: v.url,
-        state_link: v.state_link,
+        state_link: v.state_link
       })),
-      amendments: bill.amendments.map(
-        (a: any): zGetBill["amendments"][number] => ({
-          amendment_id: a.amendment_id,
-          adopted: Boolean(a.adopted),
-          chamber_id: a.chamber_id,
-          chamber_raw: a.chamber,
-          date: a.date !== "0000-00-00" ? a.date : null,
-          title: a.title,
-          description: a.description,
-          mime: asName(Mime, a.mime_id)!,
-          mime_id: a.mime_id,
-          mime_raw: a.mime,
-          url: a.url,
-          state_link: a.state_link,
-          amendment_size: a.amendment_size,
-          amendment_hash: a.amendment_hash,
-          alt_amendment: a.alt_amendment || null,
-          alt_mime: a.alt_mime_id ? asName(Mime, a.alt_mime_id)! : null,
-          alt_mime_id: a.alt_mime_id || null,
-          alt_mime_raw: a.alt_mime || null,
-          alt_state_link: a.alt_state_link || null,
-          alt_amendment_size: a.alt_amendment_size || null,
-          alt_amendment_hash: a.alt_amendment_hash || null,
-        }),
-      ),
-      supplements: bill.supplements.map(
-        (s: any): zGetBill["supplements"][number] => ({
-          supplement_id: s.supplement_id,
-          date: s.date,
-          type: asName(SupplementType, s.type_id)!,
-          type_id: s.type_id,
-          type_raw: s.type,
-          mime: asName(Mime, s.mime_id)!,
-          mime_id: s.mime_id,
-          mime_raw: s.mime,
-          url: s.url,
-          state_link: s.state_link,
-          supplement_size: s.supplement_size,
-          supplement_hash: s.supplement_hash,
-          alt_supplement: s.alt_supplement || null,
-          alt_mime: s.alt_mime_id ? asName(Mime, s.alt_mime_id)! : null,
-          alt_mime_id: s.alt_mime_id || null,
-          alt_mime_raw: s.alt_mime || null,
-          alt_state_link: s.alt_state_link || null,
-          alt_supplement_size: s.alt_supplement_size || null,
-          alt_supplement_hash: s.alt_supplement_hash || null,
-        }),
-      ),
+      amendments: bill.amendments.map((a: any): zGetBill["amendments"][number] => ({
+        amendment_id: a.amendment_id,
+        adopted: Boolean(a.adopted),
+        chamber_id: a.chamber_id,
+        chamber_raw: a.chamber,
+        date: a.date !== "0000-00-00" ? a.date : null,
+        title: a.title,
+        description: a.description,
+        mime: asName(Mime, a.mime_id)!,
+        mime_id: a.mime_id,
+        mime_raw: a.mime,
+        url: a.url,
+        state_link: a.state_link,
+        amendment_size: a.amendment_size,
+        amendment_hash: a.amendment_hash,
+        alt_amendment: a.alt_amendment || null,
+        alt_mime: a.alt_mime_id ? asName(Mime, a.alt_mime_id)! : null,
+        alt_mime_id: a.alt_mime_id || null,
+        alt_mime_raw: a.alt_mime || null,
+        alt_state_link: a.alt_state_link || null,
+        alt_amendment_size: a.alt_amendment_size || null,
+        alt_amendment_hash: a.alt_amendment_hash || null
+      })),
+      supplements: bill.supplements.map((s: any): zGetBill["supplements"][number] => ({
+        supplement_id: s.supplement_id,
+        date: s.date,
+        type: asName(SupplementType, s.type_id)!,
+        type_id: s.type_id,
+        type_raw: s.type,
+        mime: asName(Mime, s.mime_id)!,
+        mime_id: s.mime_id,
+        mime_raw: s.mime,
+        url: s.url,
+        state_link: s.state_link,
+        supplement_size: s.supplement_size,
+        supplement_hash: s.supplement_hash,
+        alt_supplement: s.alt_supplement || null,
+        alt_mime: s.alt_mime_id ? asName(Mime, s.alt_mime_id)! : null,
+        alt_mime_id: s.alt_mime_id || null,
+        alt_mime_raw: s.alt_mime || null,
+        alt_state_link: s.alt_state_link || null,
+        alt_supplement_size: s.alt_supplement_size || null,
+        alt_supplement_hash: s.alt_supplement_hash || null
+      })),
       calendar: bill.calendar.map((c: any): zGetBill["calendar"][number] => ({
         type: asName(EventType, c.type_id)!,
         type_id: c.type_id,
@@ -427,8 +416,8 @@ export class LegiscanClient {
         date: c.date,
         time: c.time || null,
         location: c.location || null,
-        description: c.description,
-      })),
+        description: c.description
+      }))
     }) as Bill;
   }
 
@@ -463,7 +452,7 @@ export class LegiscanClient {
       alt_state_link: amendment.alt_state_link || null,
       alt_amendment_size: amendment.alt_amendment_size || null,
       alt_amendment_hash: amendment.alt_amendment_hash || null,
-      alt_doc: amendment.alt_doc || null,
+      alt_doc: amendment.alt_doc || null
     } satisfies zGetAmendment) as Amendment;
   }
 
@@ -490,15 +479,13 @@ export class LegiscanClient {
       supplement_hash: supplement.supplement_hash,
       doc: supplement.doc,
       alt_supplement: supplement.alt_supplement || null,
-      alt_mime: supplement.alt_mime_id
-        ? asName(Mime, supplement.mime_id)!
-        : null,
+      alt_mime: supplement.alt_mime_id ? asName(Mime, supplement.mime_id)! : null,
       alt_mime_id: supplement.alt_mime_id || null,
       alt_mime_raw: supplement.alt_mime || null,
       alt_state_link: supplement.alt_state_link || null,
       alt_supplement_size: supplement.alt_supplement_size || null,
       alt_supplement_hash: supplement.alt_supplement_hash || null,
-      alt_doc: supplement.alt_doc || null,
+      alt_doc: supplement.alt_doc || null
     } satisfies zGetSupplement) as Supplement;
   }
 
@@ -522,14 +509,12 @@ export class LegiscanClient {
       passed: Boolean(roll_call.passed),
       chamber_id: roll_call.chamber_id,
       chamber_raw: roll_call.chamber,
-      votes: numericalToArray(roll_call.votes).map(
-        (v: any): zGetRollCall["votes"][number] => ({
-          people_id: v.people_id,
-          vote: asName(Vote, v.vote_id)!,
-          vote_id: v.vote_id,
-          vote_raw: v.vote_text,
-        }),
-      ),
+      votes: numericalToArray(roll_call.votes).map((v: any): zGetRollCall["votes"][number] => ({
+        people_id: v.people_id,
+        vote: asName(Vote, v.vote_id)!,
+        vote_id: v.vote_id,
+        vote_raw: v.vote_text
+      }))
     } satisfies zGetRollCall) as RollCall;
   }
 
@@ -543,8 +528,8 @@ export class LegiscanClient {
     return zGetPerson.parse({
       people_id: person.people_id,
       person_hash: person.person_hash,
-      party: asName(Party, parseInt(person.party_id))!,
-      party_id: parseInt(person.party_id),
+      party: asName(Party, parseInt(person.party_id, 10))!,
+      party_id: parseInt(person.party_id, 10),
       party_raw: person.party,
       state: asName(State, person.state_id)!,
       state_id: person.state_id,
@@ -567,7 +552,7 @@ export class LegiscanClient {
       committee_sponsor: Boolean(person.committee_sponsor),
       committee_id: person.committee_id || null,
       state_federal: Boolean(person.state_federal),
-      bio: person.bio,
+      bio: person.bio
     } satisfies zGetPerson) as Person;
   }
 
@@ -578,14 +563,14 @@ export class LegiscanClient {
    */
   async getSessionPeople({ id }: { id: number }): Promise<SessionPeople> {
     const {
-      sessionpeople: { people },
+      sessionpeople: { people }
     } = await this.request("getSessionPeople", { id });
     return zGetSessionPeople.parse(
       (people ?? []).map((person: any): zGetSessionPeople[number] => ({
         people_id: person.people_id,
         person_hash: person.person_hash,
-        party: asName(Party, parseInt(person.party_id))!,
-        party_id: parseInt(person.party_id),
+        party: asName(Party, parseInt(person.party_id, 10))!,
+        party_id: parseInt(person.party_id, 10),
         party_raw: person.party,
         state: asName(State, person.state_id)!,
         state_id: person.state_id,
@@ -608,8 +593,8 @@ export class LegiscanClient {
         committee_sponsor: Boolean(person.committee_sponsor),
         committee_id: person.committee_id || null,
         state_federal: Boolean(person.state_federal),
-        bio: person.bio,
-      })),
+        bio: person.bio
+      }))
     ) as SessionPeople;
   }
 
@@ -620,7 +605,7 @@ export class LegiscanClient {
    */
   async getSponsoredList({ id }: { id: number }): Promise<SponsoredList> {
     const {
-      sponsoredbills: { sessions, bills },
+      sponsoredbills: { sessions, bills }
     } = await this.request("getSponsoredList", { id });
     return zGetSponsoredList.parse(
       bills.map((b: any): zGetSponsoredList[number] => ({
@@ -640,11 +625,11 @@ export class LegiscanClient {
               special: Boolean(s.special),
               session_tag: s.session_tag,
               session_title: s.session_title,
-              session_name: s.session_name,
-            }),
+              session_name: s.session_name
+            })
           )
-          .find((s: _zSession) => s.session_id === b.session_id),
-      })),
+          .find((s: _zSession) => s.session_id === b.session_id)
+      }))
     ) as SponsoredList;
   }
 
@@ -658,7 +643,7 @@ export class LegiscanClient {
   async getSearch({
     query,
     state,
-    year,
+    year
   }: {
     query: string;
     state?: Needle;
@@ -680,7 +665,7 @@ export class LegiscanClient {
   async *getSearchAsync({
     query,
     state,
-    year,
+    year
   }: {
     query: string;
     state?: Needle;
@@ -693,7 +678,7 @@ export class LegiscanClient {
         query,
         page,
         ...(state ? { state: asName(State, state) } : {}),
-        ...(year ? { year: year.toString() } : {}),
+        ...(year ? { year: year.toString() } : {})
       });
       const items = numericalToArray(searchresult).map(
         (b: any): zGetSearch[number] =>
@@ -709,8 +694,8 @@ export class LegiscanClient {
             research_url: b.research_url,
             last_action: b.last_action,
             last_action_date: b.last_action_date,
-            title: b.title,
-          }) satisfies zGetSearch[number],
+            title: b.title
+          }) satisfies zGetSearch[number]
       );
       yield* items as Search;
       page++;

@@ -1,7 +1,8 @@
-import { assert, test } from "vitest";
-import { promisify } from "node:util";
 import { exec as _exec } from "node:child_process";
+import { promisify } from "node:util";
 import dotenv from "dotenv";
+import { assert, test } from "vitest";
+
 const exec = promisify(_exec);
 
 dotenv.config({ quiet: true });
