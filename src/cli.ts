@@ -23,7 +23,7 @@ program.name("legiscan").description("CLI for Legiscan API").version(packageJson
 const clientSource = fs.readFileSync(
   path.resolve(
     import.meta.dirname,
-    import.meta.dirname.includes("/dist") ? "client.js" : "client.ts"
+    import.meta.dirname.includes("/dist") ? "index.js" : "client.ts"
   ),
   "utf-8"
 );

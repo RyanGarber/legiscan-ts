@@ -3,6 +3,7 @@
   "files": {
     "includes": [
       "src/**/*.ts",
+      "!src/generated",
       "test/**/*.ts",
       "*.ts",
       "*.json",
