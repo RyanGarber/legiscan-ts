@@ -41,7 +41,8 @@
     "prepublishOnly": "npm run check && npm test -- --run && npm run build",
     "release": "bumpp --commit --push --tag && pnpm publish",
     "test": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "typegen": "tsx scripts/typegen.ts"
   },
   "engines": {
     "node": ">=18.0.0"

@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  build:
+  check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -25,6 +25,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm ci
+
+      - name: Generate types
+        run: pnpm typegen
 
       - name: Lint
         run: pnpm lint
