@@ -2,9 +2,9 @@
   "name": "@ryangarber/legiscan-ts",
   "version": "2.1.2",
   "description": "A TypeScript client for the Legiscan API.",
-  "author": "Civic News",
+  "author": "Ryan Garber",
   "contributors": [
-    "Ryan Garber <ryanmichaelgarber@gmail.com>"
+    "Civic News"
   ],
   "repository": {
     "type": "git",
@@ -69,5 +69,5 @@
     "typescript": "^7.0.2",
     "vitest": "^4.1.10"
   },
-  "packageManager": "pnpm@11.1.0+sha512.0c44e842e5686b2c061a81adda8b2258bd8818e9704b2cf2c63d56b931a7b2e910092e085027003b96ca3911ab56a07f6df5abaed2be9925034cdd686a535b14"
+  "packageManager": "pnpm@11.22.0+sha512.1ff870c4c6133dfd88fb2afc46dd13d47f09c9794b438c6fdb47ca98caf3bc16381ee0be93a091b8e3824cf01f889f46d7d9e20910fb0be1ab0fb5baa80dd621"
 }
